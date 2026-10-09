@@ -1,4 +1,4 @@
-# Universal Agent Kit 🚀
+# Universal Agent Kit
 
 > Standardized AI agent rules, coding instructions, and folder structure templates for multi-language projects.
 
