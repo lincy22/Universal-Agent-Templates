@@ -13,26 +13,6 @@ Universal Agent Kit provides reusable AI agent instructions and project template
 - **Dart CLI Tool:** Install language-specific agent rules into your project using a single command.
 - **AI Audit (`check`):** Verify that AI-generated code complies with your project's rules and security standards.
 
----
-
-## Repository Structure
-
-```text
-Universal-Agent-Templates/
-├── cli/                        # Dart CLI source code
-│   ├── bin/                    # Binary entrypoints
-│   ├── lib/                    # Core logic & commands
-│   └── pubspec.yaml
-├── templates/                  # Language & Framework Templates
-│   ├── flutter/
-│   ├── react/
-│   ├── python/
-│   ├── nextjs/
-│   ├── nodejs/
-│   ├── spring-boot/
-│   └── go/
-└── README.md
-```
 
 ---
 
