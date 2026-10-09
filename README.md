@@ -6,7 +6,7 @@ Universal Agent Kit provides reusable AI agent instructions and project template
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 - **Multi-Language Agent Templates:** Clean rules, security guardrails, and architectural guidelines for your tech stack.
 - **Multi-AI Tool Support:** Export rules for **Google Antigravity**, **Cursor** (`.cursorrules`), **Windsurf** (`.windsurfrules`), **Claude Code** (`CLAUDE.md`), and **GitHub Copilot**.
@@ -15,7 +15,7 @@ Universal Agent Kit provides reusable AI agent instructions and project template
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 Universal-Agent-Templates/
@@ -36,7 +36,7 @@ Universal-Agent-Templates/
 
 ---
 
-## 🛠️ Quick Start
+## Quick Start
 
 ### Installation via Dart CLI
 
@@ -50,7 +50,7 @@ dart run cli/bin/universal_agent.dart init react
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions for new language templates, AI tool exporters, and CLI features are welcome! Please open an issue or pull request.
 
