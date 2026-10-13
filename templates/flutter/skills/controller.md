@@ -1,1 +1,379 @@
+# Flutter Controller & State Management Skill
 
+## Overview
+Architectural standards, patterns, and reference implementations for managing application state in Flutter using **Riverpod (AsyncNotifier)** as the primary state solution, aligned with the Feature-First Clean Architecture.
+
+---
+
+## Directory & Folder Structure
+
+Controllers live inside the `presentation/controllers/` folder of each feature:
+
+```text
+lib/
+├── core/
+│   └── utils/
+│       └── result.dart              # Result<T> sealed class
+├── features/
+│   └── <feature_name>/
+│       ├── domain/
+│       │   └── usecases/            # Business actions consumed by controllers
+│       └── presentation/
+│           ├── controllers/
+│           │   ├── <feature>_controller.dart        # AsyncNotifier / StateNotifier
+│           │   └── <feature>_controller.g.dart      # Riverpod codegen output
+│           ├── screens/
+│           │   └── <feature>_screen.dart
+│           └── widgets/
+└── main.dart
+```
+
+---
+
+## Core Rules & Principles
+
+### 1. Controllers Are Thin Orchestrators
+- Controllers **must not** contain business logic. They call Use Cases and translate the `Result<T>` into UI state.
+- Never call a Repository directly from a Controller — always go through a Use Case.
+
+### 2. Use `AsyncNotifier` for Async Operations
+- Prefer `AsyncNotifier<T>` (Riverpod) for any controller that fetches or mutates remote data.
+- Use `Notifier<T>` only for purely synchronous, local UI state.
+- Use `StateProvider` only for trivial leaf-state (e.g., a toggle switch value).
+
+### 3. Immutable State Objects
+- Define a dedicated, immutable state class (e.g., `AuthState`) using `freezed` or plain `const` classes.
+- Never mutate state in-place; always emit a new state object via `state = ...`.
+
+### 4. Explicit Loading / Error / Data States
+- Every async controller must explicitly model three states: **loading**, **error**, and **data**.
+- Use `AsyncValue<T>` from Riverpod (automatically provided by `AsyncNotifier`) or a custom sealed `UIState<T>` class.
+
+### 5. Error Handling at the Controller Boundary
+- Catch `Result.failure(...)` responses from Use Cases here and convert them to user-readable error messages.
+- Never let raw exceptions propagate to the widget tree.
+
+### 6. One Controller Per Feature Screen (max)
+- A controller should map to one screen or one cohesive user flow.
+- Avoid a "god controller" covering multiple unrelated features.
+
+---
+
+## Reference Implementation
+
+### 1. Immutable State Class
+```dart
+// features/auth/presentation/controllers/auth_state.dart
+
+enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
+
+class AuthState {
+  final AuthStatus status;
+  final UserEntity? user;
+  final String? errorMessage;
+
+  const AuthState({
+    this.status = AuthStatus.initial,
+    this.user,
+    this.errorMessage,
+  });
+
+  bool get isLoading => status == AuthStatus.loading;
+  bool get isAuthenticated => status == AuthStatus.authenticated;
+
+  AuthState copyWith({
+    AuthStatus? status,
+    UserEntity? user,
+    String? errorMessage,
+  }) {
+    return AuthState(
+      status: status ?? this.status,
+      user: user ?? this.user,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+}
+```
+
+---
+
+### 2. AsyncNotifier Controller (Riverpod)
+```dart
+// features/auth/presentation/controllers/auth_controller.dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/logout_usecase.dart';
+import '../../../../core/utils/result.dart';
+import 'auth_state.dart';
+
+part 'auth_controller.g.dart';
+
+@riverpod
+class AuthController extends _$AuthController {
+  @override
+  AuthState build() {
+    return const AuthState();
+  }
+
+  LoginUseCase get _loginUseCase => ref.read(loginUseCaseProvider);
+  LogoutUseCase get _logoutUseCase => ref.read(logoutUseCaseProvider);
+
+  Future<void> login({required String email, required String password}) async {
+    state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
+
+    final params = LoginParams(email: email, password: password);
+    final result = await _loginUseCase(params);
+
+    switch (result) {
+      case Success(:final data):
+        state = state.copyWith(status: AuthStatus.authenticated, user: data);
+      case FailureResult(:final message):
+        state = state.copyWith(status: AuthStatus.error, errorMessage: message);
+    }
+  }
+
+  Future<void> logout() async {
+    state = state.copyWith(status: AuthStatus.loading);
+
+    final result = await _logoutUseCase();
+
+    switch (result) {
+      case Success():
+        state = const AuthState(status: AuthStatus.unauthenticated);
+      case FailureResult(:final message):
+        state = state.copyWith(status: AuthStatus.error, errorMessage: message);
+    }
+  }
+}
+```
+
+---
+
+### 3. Provider Registration
+```dart
+// features/auth/presentation/controllers/auth_controller.g.dart
+// Auto-generated by riverpod_annotation — do not edit manually.
+// Run: dart run build_runner build --delete-conflicting-outputs
+
+// --- Use Case Providers (example manual providers) ---
+
+// features/auth/providers.dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'domain/usecases/login_usecase.dart';
+import 'domain/usecases/logout_usecase.dart';
+import 'data/repositories/auth_repository_impl.dart';
+
+part 'providers.g.dart';
+
+@riverpod
+AuthRepository authRepository(AuthRepositoryRef ref) {
+  return AuthRepositoryImpl(
+    remoteDataSource: ref.watch(authRemoteDataSourceProvider),
+  );
+}
+
+@riverpod
+LoginUseCase loginUseCase(LoginUseCaseRef ref) {
+  return LoginUseCase(ref.watch(authRepositoryProvider));
+}
+
+@riverpod
+LogoutUseCase logoutUseCase(LogoutUseCaseRef ref) {
+  return LogoutUseCase(ref.watch(authRepositoryProvider));
+}
+```
+
+---
+
+### 4. Consuming the Controller in a Screen
+```dart
+// features/auth/presentation/screens/login_screen.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../controllers/auth_controller.dart';
+import '../controllers/auth_state.dart';
+
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onLoginPressed() async {
+    await ref.read(authControllerProvider.notifier).login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+
+    // Navigate on success
+    ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      if (next.isAuthenticated) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+      if (next.status == AuthStatus.error && next.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.errorMessage!), backgroundColor: Colors.red),
+        );
+      }
+    });
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 24),
+            authState.isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: _onLoginPressed,
+                    child: const Text('Login'),
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+---
+
+### 5. Using `AsyncNotifier` for Data Fetching
+```dart
+// features/profile/presentation/controllers/profile_controller.dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/get_user_profile_usecase.dart';
+import '../../../../core/utils/result.dart';
+
+part 'profile_controller.g.dart';
+
+@riverpod
+class ProfileController extends _$ProfileController {
+  @override
+  Future<UserEntity> build() async {
+    return _fetchProfile();
+  }
+
+  Future<UserEntity> _fetchProfile() async {
+    final useCase = ref.read(getUserProfileUseCaseProvider);
+    final result = await useCase();
+
+    return switch (result) {
+      Success(:final data) => data,
+      FailureResult(:final message) => throw Exception(message),
+    };
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(_fetchProfile);
+  }
+}
+```
+
+---
+
+### 6. Consuming `AsyncNotifier` with `AsyncValue` in a Widget
+```dart
+// features/profile/presentation/screens/profile_screen.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../controllers/profile_controller.dart';
+
+class ProfileScreen extends ConsumerWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(profileControllerProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Profile')),
+      body: profileAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Error: $error'),
+              ElevatedButton(
+                onPressed: () => ref.read(profileControllerProvider.notifier).refresh(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+        data: (user) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Name: ${user.name}', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text('Email: ${user.email}'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+---
+
+## State Management Decision Matrix
+
+| Scenario | Recommended Solution |
+|---|---|
+| Async remote data fetch (read-only) | `AsyncNotifier` + `.when()` |
+| Async remote data with mutations | `AsyncNotifier` with custom methods |
+| Complex multi-step form / wizard | `Notifier<FormState>` with `copyWith` |
+| Simple UI toggle / filter | `StateProvider<bool>` |
+| Derived / computed state | `Provider` (combines other providers) |
+| Shared global session / auth state | `Notifier<AuthState>` at root scope |
+
+---
+
+## Common Anti-Patterns to Avoid
+
+| ❌ Anti-Pattern | ✅ Correct Approach |
+|---|---|
+| Calling Repository directly from a widget | Always go through a Controller and Use Case |
+| Putting `if/else` business rules in a Controller | Move rules to the Use Case layer |
+| Using `setState` for shared state | Use Riverpod providers scoped appropriately |
+| Storing raw exceptions in state | Convert exceptions to user-friendly `String` messages |
+| A single "AppController" for all features | One focused Controller per feature screen |
+| Reading providers inside `build()` without `watch` | Use `ref.watch` for reactive updates |
