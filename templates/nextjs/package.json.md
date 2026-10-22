@@ -223,6 +223,7 @@ Avoid deleting the lockfile as a first troubleshooting step.
 - Next.js documentation: https://nextjs.org/docs
 - Node.js documentation: https://nodejs.org/docs/
 
+
 ## 13. Summary
 
 The `package.json` file manages project metadata, dependencies, and npm scripts. Understanding this file makes it easier to maintain, debug, develop, and deploy JavaScript and Next.js applications.
