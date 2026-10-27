@@ -50,8 +50,4 @@ dart run cli/bin/universal_agent.dart init react
 
 ---
 
-## Contributing
-
-Contributions for new language templates, AI tool exporters, and CLI features are welcome! Please open an issue or pull request.
-
 License: MIT
