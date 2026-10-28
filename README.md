@@ -23,7 +23,7 @@ Universal-Agent-Templates/
 │   ├── bin/                    # Binary entrypoints
 │   ├── lib/                    # Core logic & commands
 │   └── pubspec.yaml
-├── templates/                  # Language & Framework Templates
+├── templates/                  
 │   ├── flutter/
 │   ├── react/
 │   ├── python/
