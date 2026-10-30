@@ -2,7 +2,7 @@
 
 > Standardized AI agent rules, coding instructions, and folder structure templates for multi-language projects.
 
-Universal Agent Kit provides reusable AI agent instructions and project templates for **Flutter / Dart**, **React**, **Python**, **Node.js**, **Next.js**, **Java / Spring Boot**, and **Go**.
+Universal Agent Kit provides reusable AI agent instructions and project templates for **Flutter / Dart**, **React**, **Python**, **Node.js**, **Next.js**, **Java / Spring Boot**.
 
 ---
 
