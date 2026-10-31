@@ -9,7 +9,7 @@ Universal Agent Kit provides reusable AI agent instructions and project template
 ## Key Features
 
 - **Multi-Language Agent Templates:** Clean rules, security guardrails, and architectural guidelines for your tech stack.
-- **Multi-AI Tool Support:** Export rules for **Google Antigravity**, **Cursor** (`.cursorrules`), **Windsurf** (`.windsurfrules`), **Claude Code** (`CLAUDE.md`), and **GitHub Copilot**.
+- **Multi-AI Tool Support:** Export rules for **Google Antigravity**, **Cursor** (`.cursorrules`), **Windsurf** (`.windsurfrules`), **Claude Code** , and **GitHub Copilot**.
 - **Dart CLI Tool:** Install language-specific agent rules into your project using a single command.
 - **AI Audit (`check`):** Verify that AI-generated code complies with your project's rules and security standards.
 
