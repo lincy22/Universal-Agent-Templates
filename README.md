@@ -21,7 +21,7 @@ Universal Agent Kit provides reusable AI agent instructions and project template
 Universal-Agent-Templates/
 ├── cli/                        # Dart CLI source code
 │   ├── bin/                   
-│   ├── lib/                    # Core logic & commands
+│   ├── lib/                  
 │   └── pubspec.yaml
 ├── templates/                  
 │   ├── flutter/
