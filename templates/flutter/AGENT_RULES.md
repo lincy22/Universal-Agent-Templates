@@ -1,4 +1,4 @@
-# Flutter / Dart AI Agent Rules & Guidelines
+# Flutter / Dart 
 
 ## Core Principles
 1. **Clean Architecture:** Use Feature-First folder organization (`features/feature_name/presentation`, `domain`, `data`).
