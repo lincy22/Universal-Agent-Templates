@@ -16,7 +16,7 @@ src/
 ├── routes/             # API routes definition
 ├── services/           # Business logic
 ├── utils/              # Helper functions
-└── app.js              # Application entrypoint
+└── app.js              
 ```
 
 ## Security Guardrails
