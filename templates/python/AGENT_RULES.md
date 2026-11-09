@@ -22,5 +22,5 @@ tests/
 ```
 
 ## Security Guardrails
-- Never hardcode secrets. Use Pydantic `BaseSettings` reading from `.env`.
+- Never hardcode secrets. Use Pydantic `BaseSettings` reading from .
 - Always write Unit Tests using `pytest` for business logic functions.
