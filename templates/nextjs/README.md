@@ -4,7 +4,7 @@ A reusable Next.js project template with structured instructions for AI coding a
 
 ## Overview
 
-This template provides a foundation for building web applications using Next.js. It can be used with AI coding assistants to guide code generation, debugging, refactoring, and feature development.
+This template provides a foundation for building web applications using Next.js. It can be used with AI coding assistants to guide code generation, debugging
 
 ## Features
 
