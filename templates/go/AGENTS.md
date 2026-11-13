@@ -25,6 +25,7 @@ You are an expert Go (Golang) developer. Write clean, secure, efficient, maintai
 - Document exported functions, types, constants, and variables.
 - Avoid global mutable state unless genuinely necessary.
 - Do not use `panic` for normal application errors.
+- Do not use `panic` for normal application errors.
 
 ## 4. Project Structure
 
