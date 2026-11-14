@@ -12,7 +12,6 @@
 - Identify the Next.js version, routing system, styling framework, and TypeScript configuration.
 - Understand existing functionality before modifying files.
 - If requirements are unclear, ask questions before making major changes.
-- Present a short implementation plan for large changes.
 
 ## 3. Next.js Rules
 - Follow the existing Next.js version and App Router or Pages Router architecture.
