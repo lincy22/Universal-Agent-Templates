@@ -15,6 +15,8 @@ This template provides a foundation for building web applications using Next.js.
 - **Code Quality** — Follow consistent naming conventions and coding practices.
 - **Maintainable Architecture** — Organize components, pages, and application logic clearly.
 - **Documentation** — Keep project instructions and development guidelines in Markdown files.
+- **Documentation** — Keep project instructions and development guidelines in Markdown files.
+
 
 ## Technology Stack
 
