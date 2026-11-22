@@ -2,10 +2,6 @@
 
 A beginner-friendly repository to learn **Go (Golang)**, a fast, simple, and efficient programming language developed by Google.
 
-## About Go
-
-Go, also known as Golang, is an open-source programming language designed to build reliable, scalable, and efficient software.
-
 ## Features
 
 - Simple and easy-to-learn syntax
