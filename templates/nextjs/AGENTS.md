@@ -5,7 +5,7 @@
 - Follow the existing project architecture and conventions.
 - Inspect the repository before making any changes.
 - Prefer simple, maintainable, reusable solutions.
-
+- Prefer simple, maintainable, reusable solutions.
 ## 2. Before Making Changes
 - Read `README.md`, `package.json`, and relevant configuration files.
 - Inspect the existing folder structure and installed dependencies.
