@@ -9,6 +9,7 @@ It allows developers to customize framework behavior, image optimization, redire
 The file is written in TypeScript and uses the `NextConfig` type provided by Next.js.
 
 Official documentation: https://nextjs.org/docs/app/api-reference/config/next-config-js
+Official documentation: https://nextjs.org/docs/app/api-reference/config/next-config-js
 
 ## 2. What Is next.config.ts?
 
